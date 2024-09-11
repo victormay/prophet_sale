@@ -1,0 +1,13 @@
+
+class Code:
+
+    SUCCESS = 200
+
+    # DB ERROR
+    INSERT_ERROR = 1001
+    DELETE_ERROR = 1002
+    UPDATE_ERROR = 1003
+    SELECT_ERROR = 1004
+
+    # AUTH ERROR
+    AUTH_ERROR = 2001

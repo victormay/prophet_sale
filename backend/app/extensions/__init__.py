@@ -1,0 +1,1 @@
+from .init_static import template,init_static

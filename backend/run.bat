@@ -1,0 +1,1 @@
+start uvicorn app:app --log-config uvicorn_log_config.json
