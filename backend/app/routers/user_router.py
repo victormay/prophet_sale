@@ -1,9 +1,9 @@
 from fastapi import APIRouter,Depends,Form,Request
 from app.utils.depends import DALGetter
 from app.db.schemas import UserIn,UserOut,UserBase
-from app.db.dao import UserDao,UserError
+from app.db.dao import UserDao, UserError
 from app.utils import Code
-from app.db import sm
+from app.db import async_session
 from app.extensions import template
 from app.utils.depends import login,master,get_cookie
 
@@ -31,7 +31,7 @@ async def create_user_api(
         user:UserIn
 ):
     try:
-        async with sm().begin() as ss:
+        async with async_session().begin() as ss:
             db_user = await dao.insert(user)
             return UserOut(status=Code.SUCCESS,data=db_user)
     except UserError as e:

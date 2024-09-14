@@ -1,44 +1,38 @@
-from app.db.models import User
-from app.db.schemas import UserIn,UserOut
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models import User, UserType
+from app.db.schemas import UserIn,UserOut
+from app.utils.res_code import code_and_msg, PdsfException
 
 
-class UserError(Exception):
-    def __init__(self,msg):
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
+@code_and_msg(100001, "user count already exist!")
+class UserCountAlreadyExist(PdsfException):
+    ...
 
 
-class UserCountExist(UserError):
-    def __init__(self,count):
-        self.msg = f"usercount : {count} already exist!"
+@code_and_msg(100002, "user not exist!")
+class UserCountNotExist(PdsfException):
+    ...
 
 
-class UserCountNotExist(UserError):
-    def __init__(self,count):
-        self.msg = f"usercount : {count} not exist!"
+@code_and_msg(100003, "password error!")
+class UserPasswordError(PdsfException):
+    ...
 
 
-class UserPasswordError(UserError):
-    def __init__(self):
-        self.msg = f"password error!"
+@code_and_msg(100004, "you are not master!")
+class UserNotMaster(PdsfException):
+    ...
 
 
-class UserNotMaster(UserError):
-    def __init__(self,usercount):
-        self.msg = f"user: {usercount},you are not the master!"
-
-
-class UserNotActivate(UserError):
-    def __init__(self,usercount):
-        self.msg = f"user: {usercount},you are not active user!"
+@code_and_msg(100005, "you are not active user!")
+class UserNotActivate(PdsfException):
+    ...
 
 
 class UserDao:
-    def __init__(self,ss:AsyncSession):
+    def __init__(self,ss: AsyncSession):
         self.ss = ss
 
     async def authenticate(self, user:UserIn):
@@ -52,7 +46,7 @@ class UserDao:
             return None
         return user
 
-    async def insert(self,user:UserIn):
+    async def insert(self,user: UserIn):
         await self.unique_check(user)
         user.password = User.gen_password(user.password)
         db_user = User(**user.__dict__)
@@ -66,7 +60,7 @@ class UserDao:
         if count_exist.scalar() is not None:
             raise UserCountExist(count)
 
-    async def get_user_by_count(self,usercount):
+    async def get_user_by_count(self, usercount):
         db_user = await self.ss.scalar(select(User).filter(User.usercount==usercount))
         if db_user is None:
             raise UserCountNotExist(usercount)
@@ -86,7 +80,7 @@ class UserDao:
             raise UserNotActivate(db_user.usercount)
         return db_user
 
-    async def is_master(self,db_user):
+    async def is_master(self, db_user):
         if db_user.usercount not in ["15760070536@qq.com",]:
             raise UserNotMaster(db_user.usercount)
         return db_user

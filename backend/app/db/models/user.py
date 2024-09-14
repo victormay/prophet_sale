@@ -1,18 +1,11 @@
 from uuid import uuid1
 from passlib.context import CryptContext
-from app.db import Base
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, SmallInteger, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import types
+from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 import enum
 
-
-def current_now():
-    return datetime.now()
-
-
-def gen_uuid():
-    return uuid1().__str__()
+from .base import Base
 
 
 passwd_tool = CryptContext(schemes=['bcrypt'], deprecated='auto')
@@ -24,15 +17,24 @@ class UserType(enum.Enum):
 
 class User(Base):
     __tablename__ = "user"
-    id = Column(Integer,primary_key=True,autoincrement=True)
-    usercount = Column(String(32), unique=True, nullable=False)
-    username = Column(String(64), default=gen_uuid, nullable=False)
-    password = Column(String(256), nullable=False)
-    img = Column(String(256), nullable=False, default="")
-    activate = Column(Boolean, nullable=False, default=True)
-    type = Column(Enum(UserType), nullable=False, default="USER")
-    create_time = Column(DateTime, default=current_now)
-    update_time = Column(DateTime, default=current_now)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usercount: Mapped[str] = mapped_column(types.String(30), unique=True)
+    username: Mapped[str] = mapped_column(
+        types.String(64),
+        default=lambda : str(uuid1()),
+    )
+    password: Mapped[str] = mapped_column(types.String(256))
+    img: Mapped[str] = mapped_column(types.String(256), default="")
+    activate: Mapped[bool] = mapped_column(types.Boolean, default=True)
+    type: Mapped[UserType] = mapped_column(default="USER")
+    create_time: Mapped[datetime] = mapped_column(
+        types.DATETIME(),
+        default=lambda :datetime.now()
+    )
+    update_time: Mapped[datetime] = mapped_column(
+        types.DATETIME(),
+        default=lambda :datetime.now()
+    )
 
     @staticmethod
     def gen_password(password):
@@ -45,4 +47,4 @@ class User(Base):
         return valid
 
     def __repr__(self):
-        return f"<{self.id,self.usercount}>"
+        return f"User(id: {self.id}, usercount: {self.usercount})"

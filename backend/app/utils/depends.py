@@ -1,4 +1,4 @@
-from app.db import sm
+from app.db import async_session
 from app.utils.common import auth_tool, parse_token
 from fastapi import Depends, HTTPException,Request
 from app.db.dao import UserDao,UserError
@@ -11,7 +11,7 @@ class DALGetter:
         self.dal_cls = dal_cls
 
     async def __call__(self):
-        async with sm() as session:
+        async with async_session() as session:
             async with session.begin():
                 yield self.dal_cls(session)
 

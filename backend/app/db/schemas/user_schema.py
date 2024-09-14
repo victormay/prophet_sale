@@ -1,19 +1,13 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, List, Union
-from fastapi import Form
+from typing import Optional, List, Union, Annotated
+
+from app.db.models import UserType
 
 
 class UserIn(BaseModel):
-    usercount: EmailStr = Field(...)
-    password: str = Field(..., min_length=6)
-
-    @classmethod
-    def as_form(cls,
-                usercount: EmailStr=Form(...),
-                password: str=Form(...,min_length=6)
-                ):
-        return cls(usercount=usercount,password=password)
+    usercount: Annotated[EmailStr, Field("user@pdsf.com")]
+    password: Annotated[str, Field("123456", min_length=6, max_length=20)]
 
 
 class UserBase(BaseModel):
@@ -22,8 +16,9 @@ class UserBase(BaseModel):
     username: str
     img: str
     activate: bool
-    c_time: datetime
-    u_time: datetime
+    type: UserType
+    create_time: datetime
+    update_time: datetime
 
     class Config:
         orm_mode = True

@@ -1,54 +1,57 @@
+import os
 import sys
-import asyncio
 from pathlib import Path
-from sqlalchemy import create_engine, insert, text
+from dotenv import load_dotenv
 
 sys.path.append(str(Path(__file__).absolute().parent.parent.parent))
-print(sys.path)
+load_dotenv()
 
-from app.config import Config
-from app.db import Base, engine, sm
-from app.db.models import (
-    User, UserType
-)
+from app.db.models import *
+from sqlalchemy import text, create_engine
+from sqlalchemy.orm import Session
+from engine import build_uri, SYNC_BACKEND, DB_NAME, ECHO
+
+
+USER_COUNT = os.environ["USER_COUNT"]
+PASSWORD = os.environ["PASSWORD"]
 
 
 
 def init_db():
-    c_engine = create_engine(Config.DATABASE_URI, echo=True)
-    drop_database = '''
-        DROP DATABASE IF EXISTS PDSF;
-    '''
-    create_database = '''
-        CREATE DATABASE IF NOT EXISTS PDSF
-        DEFAULT CHARACTER SET utf8mb4
-        DEFAULT COLLATE utf8mb4_general_ci;
-    '''
-    with c_engine.connect() as c:
-        c.execute(text(drop_database))
-        c.execute(text(create_database))
-    # c_engine.execute(sql_cmd)
+    engine = create_engine(
+        build_uri(SYNC_BACKEND),
+        echo=ECHO
+    )
+    drop_database = "DROP DATABASE IF EXISTS PDSF;"
+    create_database = ("CREATE DATABASE IF NOT EXISTS PDSF "
+                       "DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;")
+    with engine.connect() as cnn:
+        cnn.execute(text(drop_database))
+        cnn.execute(text(create_database))
 
 
-async def init_table():
-    async with engine.begin() as cnn:
-        await cnn.run_sync(Base.metadata.drop_all)
-        await cnn.run_sync(Base.metadata.create_all)
-        await init_data()
+def init_table():
+    engine = create_engine(
+        build_uri(SYNC_BACKEND, DB_NAME),
+        echo=ECHO
+    )
+    with engine.connect() as cnn:
+        Base.metadata.create_all(cnn)
+        cnn.commit()
 
-
-async def init_data():
-    async with sm.begin() as ss:
-        password = User.gen_password(Config.PASSWORD)
-        await ss.execute(insert(User).values(
-            usercount=Config.USERCOUNT, 
-            password=password,
-            type=UserType.ADMIN,
-            )
+    with Session(engine).begin() as ss:
+        default_user = User(
+            usercount=USER_COUNT,
+            password=User.gen_password(PASSWORD),
+            type=UserType.ADMIN
         )
+        ss.session.add(default_user)
+
+
+def main():
+    init_db()
+    init_table()
 
 
 if __name__ == "__main__":
-    init_db()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(init_table())
+    main()

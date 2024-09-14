@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends,HTTPException,Response,Request,Form
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordRequestForm
 from app.utils.common import gen_token, Token
 from app.utils.depends import DALGetter
-from app.db.dao import UserDao,UserError
-from app.extensions import template
-from fastapi.responses import RedirectResponse
+from app.db.dao import UserDao
 from app.config import Config
 from app.db.schemas import UserIn
 from app.routers.user_router import user_api
