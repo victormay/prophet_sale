@@ -49,7 +49,7 @@ def init_table():
 
 
 def main():
-    init_db()
+    init_db()   
     init_table()
 
 
