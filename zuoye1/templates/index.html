@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <h1>欢迎来到未来信息学院</h1>
+{% endblock %}
+
+{% block body %}
+    <a href="{{ url_for('intr') }}">学院简介</a>
+    <br>
+    <a href="{{ url_for('news') }}">学院新闻</a>
+    <br>
+    <a href="">专业介绍</a>
+    <br>
+    <a href="">招生就业</a>
+    <br>
+    <img src="{{ url_for('static', path='/school.jpg') }}" alt="not found", width="600", height="400">
+    <br>
+    友情链接：<a href="https://www.baidu.com">百度</a>&emsp;<a href="{{ url_for('index_') }}">学院官网</a>
+{% endblock %}
+
+
+{% block bottom %}
+    
+{% endblock %}

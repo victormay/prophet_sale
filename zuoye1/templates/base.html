@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未来信息学院</title>
+    <style>
+        #text {
+        text-indent: 2em; /* 设置首行缩进为2em */
+        }
+    </style>
+</head>
+<body>
+
+    {% block head %}
+    顶部
+    {% endblock head %}
+
+    <hr>
+
+    {% block body %}
+    {% endblock body %}
+
+    <hr>
+
+    <p>版权所有@未来信息学院</p>
+    {% block bottom %}
+    底部
+    {% endblock bottom %}
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <h1>学院新闻</h1>
+{% endblock %}
+
+
+{% block body %}
+{% for idx, n in news %}
+    <a href="{{ url_for('newsn', n=idx) }}">{{n["title"]}}</a><br>
+{% endfor %}
+    
+{% endblock %}
+
+{% block bottom %}
+    <br>
+    <a href="javascript:history.back(-1)">返回</a>
+{% endblock %}
