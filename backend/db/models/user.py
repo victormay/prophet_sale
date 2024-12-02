@@ -1,14 +1,12 @@
-from uuid import uuid1
-from passlib.context import CryptContext
-from sqlalchemy import types
-from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime
 import enum
+from sqlalchemy import types
+from datetime import datetime
+from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
+from utils.uuid_ import gen_str_uuid1
+from utils.password_ import gen_password, verify_password
 
-
-passwd_tool = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 class UserType(enum.Enum):
     ADMIN = 0
@@ -21,10 +19,10 @@ class User(Base):
     usercount: Mapped[str] = mapped_column(types.String(30), unique=True)
     username: Mapped[str] = mapped_column(
         types.String(64),
-        default=lambda : str(uuid1()),
+        default=gen_str_uuid1,
     )
     password: Mapped[str] = mapped_column(types.String(256))
-    img: Mapped[str] = mapped_column(types.String(256), default="")
+    img: Mapped[str] = mapped_column(types.String(128), default="default.png")
     activate: Mapped[bool] = mapped_column(types.Boolean, default=True)
     type: Mapped[UserType] = mapped_column(default="USER")
     create_time: Mapped[datetime] = mapped_column(
@@ -37,14 +35,12 @@ class User(Base):
     )
 
     @staticmethod
-    def gen_password(password):
-        hash_password = passwd_tool.hash(password)
-        return hash_password
+    def gen_password(passwd):
+        return gen_password(passwd)
 
     @staticmethod
-    def valid_password(password,hash_password):
-        valid = passwd_tool.verify(password,hash_password)
-        return valid
+    def verify_password(passwd, hashed_passwd):
+        return verify_password(passwd, hashed_passwd)
 
     def __repr__(self):
         return f"User(id: {self.id}, usercount: {self.usercount})"

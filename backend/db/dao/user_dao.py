@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import User, UserType
-from app.db.schemas import UserIn,UserOut
-from app.utils.res_code import code_and_msg, PdsfException
+from db.models import User, UserType
+from db.schemas import UserIn, UserOut
+from utils.res_code import code_and_msg, PdsfException
 
 
 @code_and_msg(100001, "user count already exist!")
@@ -41,12 +41,12 @@ class UserDao:
         q = await self.ss.execute(select(User).where(User.username == username))
         user = q.scalar()
         if not user:
-            return None
-        if not User.verify_password(password, user.password_hash):
-            return None
+            raise UserCountNotExist()
+        if not User.verify_password(password, user.password):
+            raise UserPasswordError()
         return user
 
-    async def insert(self,user: UserIn):
+    async def insert(self, user: UserIn):
         await self.unique_check(user)
         user.password = User.gen_password(user.password)
         db_user = User(**user.__dict__)
@@ -58,7 +58,7 @@ class UserDao:
         count = user.usercount
         count_exist = await self.ss.execute(select(User).filter(User.usercount==count))
         if count_exist.scalar() is not None:
-            raise UserCountExist(count)
+            raise UserCountAlreadyExist(count)
 
     async def get_user_by_count(self, usercount):
         db_user = await self.ss.scalar(select(User).filter(User.usercount==usercount))
@@ -66,7 +66,7 @@ class UserDao:
             raise UserCountNotExist(usercount)
         return db_user
 
-    async def get_and_valid_user_by_count(self,info):
+    async def get_and_valid_user_by_count(self, info):
         usercount = info.get("usercount")
         password = info.get("password")
         db_user = await self.ss.scalar(select(User).filter(User.usercount == usercount))

@@ -1,17 +1,16 @@
-# import asyncio
-#
-# from fastapi import FastAPI,Request
-# import colorama
-# from app.routers import user_api,auth
-# from app.extensions import init_static, template
-#
-# colorama.init(autoreset=True)
-# app = FastAPI(title="TBExam")
-#
-# app.include_router(user_api)
-# app.include_router(auth)
-#
-# # init_static(app)
+
+from fastapi import FastAPI,Request
+import colorama
+from routers import user_api,auth
+from extensions import init_static
+
+colorama.init(autoreset=True)
+app = FastAPI(title="PBSF Api")
+
+app.include_router(user_api)
+app.include_router(auth)
+
+# init_static(app)
 #
 #
 # @app.api_route("/",tags=["Index"],methods=["GET","POST"])
