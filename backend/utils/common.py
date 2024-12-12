@@ -1,21 +1,30 @@
 from uuid import uuid1
-from datetime import datetime, timedelta
+from pydantic import BaseModel
+from jose import jwt, JWTError, ExpiredSignatureError
+from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
-from jose import jwt, JWTError
-from app.config import Config
+
+
+# import sys
+# from pathlib import Path
+
+# sys.path.append(Path(__file__).absolute().parent.parent)
+# print(sys.path)
+
+from config import Config
 
 
 def current_now():
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 def gen_uuid():
     return uuid1().__str__()
 
 
-auth_tool = OAuth2PasswordBearer(tokenUrl="/auth/token")
+def fmt_datetime(d):
+    return datetime.strftime(d, "%Y-%m-%d %H:%M:%S")
 
 
 class Token(BaseModel):
@@ -26,22 +35,17 @@ class Token(BaseModel):
 def gen_token(info: dict, expire: int = Config.TOKEN_EXPIRE):
     exp = current_now() + timedelta(seconds=expire)
     info.update({"exp": exp})
-    token = jwt.encode(info,Config.KEY,Config.METHOD)
-    return token
+    token = jwt.encode(info, Config.KEY, Config.METHOD)
+    return {
+        "token": token,
+        "expire_in": fmt_datetime(exp + timedelta(hours=8))
+    }
 
 
 def parse_token(token: OAuth2PasswordBearer):
-    info = jwt.decode(token, Config.KEY,Config.METHOD)
+    info = jwt.decode(token, Config.KEY, Config.METHOD)
     return info
 
-
-async def question_form_web(question):
-    op = "ABCDEFGH"
-    print(question)
-    question["options"] = list(map(lambda x: [op[question["options"].index(x)], x], question["options"]))
-    question["answer"] = list(map(lambda x: op[x], question["answer"]))
-    print(question)
-    return question
 
 
 if __name__ == '__main__':

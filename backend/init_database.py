@@ -33,14 +33,16 @@ def init_table():
 
     with Session(engine).begin() as ss:
         admin_user = User(
-            usercount="admin",
+            email="admin@pdsf.com",
+            username="admin",
             password=User.gen_password("pdsf123456"),
             type=UserType.ADMIN,
             img = "admin.png"
             
         )
         normal_user = User(
-            usercount="user",
+            email="user@pdsf.com",
+            username="user",
             password=User.gen_password("123456"),
             type=UserType.USER,
             img="normal.png"

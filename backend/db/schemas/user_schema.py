@@ -3,28 +3,33 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List, Union, Annotated
 
 from db.models import UserType
+from .common import PSDFResponse
 
 
-class UserIn(BaseModel):
-    usercount: Annotated[EmailStr, Field("user@pdsf.com")]
-    password: Annotated[str, Field("123456", min_length=6, max_length=20)]
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserCrate(UserLogin):
+    ...
 
 
 class UserBase(BaseModel):
     id: int
-    usercount: str
+    email: EmailStr
     username: str
     img: str
-    activate: bool
-    type: UserType
+    type: int
     create_time: datetime
     update_time: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+        json_encoders = {
+            datetime: lambda v: v.strftime('%Y-%m-%d %H:%M:%S')  # 自定义格式化为 'YYYY-MM-DD HH:MM:SS'
+        }
 
 
-class UserOut(BaseModel):
-    status: int
-    data: Optional[Union[List[UserBase],UserBase]]
-    msg:Optional[str]
+class UserShow(PSDFResponse):
+    data: Optional[Union[List[UserBase], UserBase]]

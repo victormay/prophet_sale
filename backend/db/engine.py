@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession
 )
 
+
 DB_URI = os.environ['DB_URI']
 DB_NAME = os.environ['DB_NAME']
 SYNC_BACKEND = os.environ['SYNC_BACKEND']

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+	个人中心
+{% endblock %}
+
+{% block content %}
+	{% with msgs =  get_flashed_messages(with_categories=True) %}
+	{% for c, msg in msgs %}
+		{% if c == 'error' %}
+			<div class="flash-error">
+		{% else %}
+			<div class="success">
+		{% endif %}
+			{{ msg | safe}}</div><br>
+	{% endfor %}
+	{% endwith %}
+
+	<h3>个人资料</h3>
+	<br>
+	<ul class="navbar-nav ml-auto">
+		
+		<li>
+			用户ID：{{ current_user.id }}
+		</li>
+		<li>
+			用户名：{{ current_user.name }}
+		</li>
+		<li>
+			邮  箱：{{ current_user.email }}
+		</li>
+		<li>
+			手机号：{{ current_user.phone }}
+		</li>
+		<li>
+			管理员：{{ current_user.admin }}
+		</li>
+	</ul>
+    
+	<br>
+	
+{% endblock %}

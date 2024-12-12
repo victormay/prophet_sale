@@ -1,14 +1,16 @@
-
-from fastapi import FastAPI,Request
 import colorama
-from routers import user_api,auth
-from extensions import init_static
+from dotenv import load_dotenv
 
 colorama.init(autoreset=True)
-app = FastAPI(title="PBSF Api")
+load_dotenv()
 
-app.include_router(user_api)
-app.include_router(auth)
+
+from fastapi import FastAPI
+from routers import init_routers
+
+
+app = FastAPI(title="PBSF Api")
+init_routers(app)
 
 # init_static(app)
 #

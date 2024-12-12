@@ -5,10 +5,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
 from utils.uuid_ import gen_str_uuid1
-from utils.password_ import gen_password, verify_password
+from utils.password import gen_password, verify_password
 
 
-class UserType(enum.Enum):
+class UserType(enum.IntEnum):
     ADMIN = 0
     USER = 1
 
@@ -16,7 +16,7 @@ class UserType(enum.Enum):
 class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
-    usercount: Mapped[str] = mapped_column(types.String(30), unique=True)
+    email: Mapped[str] = mapped_column(types.String(30), unique=True)
     username: Mapped[str] = mapped_column(
         types.String(64),
         default=gen_str_uuid1,
