@@ -8,11 +8,6 @@ from utils.uuid_ import gen_str_uuid1
 from utils.password import gen_password, verify_password
 
 
-class UserType(enum.IntEnum):
-    ADMIN = 0
-    USER = 1
-
-
 class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -24,7 +19,7 @@ class User(Base):
     password: Mapped[str] = mapped_column(types.String(256))
     img: Mapped[str] = mapped_column(types.String(128), default="default.png")
     activate: Mapped[bool] = mapped_column(types.Boolean, default=True)
-    type: Mapped[UserType] = mapped_column(default="USER")
+    admin: Mapped[bool] = mapped_column(types.Boolean, default=False)
     create_time: Mapped[datetime] = mapped_column(
         types.DATETIME(),
         default=lambda :datetime.now()
@@ -43,4 +38,4 @@ class User(Base):
         return verify_password(passwd, hashed_passwd)
 
     def __repr__(self):
-        return f"User(id: {self.id}, usercount: {self.usercount})"
+        return f"User(id: {self.id})"

@@ -2,7 +2,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List, Union, Annotated
 
-from db.models import UserType
 from .common import PSDFResponse
 
 
@@ -20,7 +19,7 @@ class UserBase(BaseModel):
     email: EmailStr
     username: str
     img: str
-    type: int
+    admin: bool
     create_time: datetime
     update_time: datetime
 

@@ -4,7 +4,6 @@ from fastapi.exceptions import HTTPException
 from db import async_session
 from utils.common import parse_token
 from db.schemas.user_schema import UserBase
-from db.models import UserType
 
 
 class DALGetter:
@@ -32,7 +31,7 @@ async def NeedAdmin(
 ):
     user: UserBase = await LoggedIn(request)
     print("666666666666666")
-    if user.type != UserType.ADMIN:
+    if not user.admin:
         raise HTTPException(403, "you are not admin user")
     return user
 

@@ -1,1 +1,1 @@
-start uvicorn app:app --log-config uvicorn_log_config.json
+workon py310_torch212_cu121 & start uvicorn app:app --log-config uvicorn_log_config.json

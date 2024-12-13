@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Header
 
-from db.schemas.user_schema import UserLogin, UserBase
+from db.schemas.user_schema import UserLogin, UserBase, UserCrate
 from db.dao.user_dao import UserDao
 from utils.depends import DALGetter, LoggedIn, NeedAdmin
 
@@ -15,20 +15,36 @@ async def login(
     return await user_dao.login(user)
 
 
-@user_api.get("/test_login", dependencies=[Depends(LoggedIn)])
-async def test_login(
+@user_api.post("/register")
+async def register(
+    user: UserCrate,
+    user_dao: UserDao = Depends(DALGetter(UserDao))
+):
+    await user_dao.register(user)
+    return user.email
+
+
+@user_api.get("/current_user", dependencies=[Depends(LoggedIn)])
+async def current_user_info(
     current_user: UserBase = Depends(LoggedIn)
 ):
-    print(current_user.model_dump_json())
-    return "ok"
+    return current_user.model_dump_json()
 
 
-@user_api.get("/test_admin", dependencies=[Depends(NeedAdmin)])
-async def test_admin(
-    current_user: UserBase = Depends(NeedAdmin)
-):
-    print(current_user.model_dump_json())
-    return "ok"
+# @user_api.get("/test_login", dependencies=[Depends(LoggedIn)])
+# async def test_login(
+#     current_user: UserBase = Depends(LoggedIn)
+# ):
+#     print(current_user.model_dump_json())
+#     return "ok"
+
+
+# @user_api.get("/test_admin", dependencies=[Depends(NeedAdmin)])
+# async def test_admin(
+#     current_user: UserBase = Depends(NeedAdmin)
+# ):
+#     print(current_user.model_dump_json())
+#     return "ok"
 
 # @user_api.get("/master_test",dependencies=[Depends(master)])
 # async def mastertest():

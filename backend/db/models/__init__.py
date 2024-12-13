@@ -1,2 +1,2 @@
 from .base import Base
-from .user import User, UserType
+from .user import User

@@ -37,6 +37,7 @@ def gen_token(info: dict, expire: int = Config.TOKEN_EXPIRE):
     info.update({"exp": exp})
     token = jwt.encode(info, Config.KEY, Config.METHOD)
     return {
+        "admin": info["admin"],
         "token": token,
         "expire_in": fmt_datetime(exp + timedelta(hours=8))
     }
