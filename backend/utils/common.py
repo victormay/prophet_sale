@@ -36,11 +36,9 @@ def gen_token(info: dict, expire: int = Config.TOKEN_EXPIRE):
     exp = current_now() + timedelta(seconds=expire)
     info.update({"exp": exp})
     token = jwt.encode(info, Config.KEY, Config.METHOD)
-    return {
-        "admin": info["admin"],
-        "token": token,
-        "expire_in": fmt_datetime(exp + timedelta(hours=8))
-    }
+    info.pop("exp")
+    info.update(token=token, expire_in=fmt_datetime(exp + timedelta(hours=8)) )
+    return info
 
 
 def parse_token(token: OAuth2PasswordBearer):

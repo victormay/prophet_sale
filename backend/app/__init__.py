@@ -6,13 +6,25 @@ load_dotenv()
 
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from routers import init_routers
 
 
 app = FastAPI(title="PBSF Api")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 允许所有来源
+    allow_credentials=True,
+    allow_methods=["*"],   # 允许所有HTTP方法
+    allow_headers=["*"]    # 允许所有请求头
+)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 init_routers(app)
 
-# init_static(app)
 #
 #
 # @app.api_route("/",tags=["Index"],methods=["GET","POST"])

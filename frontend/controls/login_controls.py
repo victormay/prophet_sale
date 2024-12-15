@@ -1,6 +1,8 @@
+import httpx
 import flet as ft
+from pathlib import Path
 
-from requests.user import login
+from config import Cfg
 
 
 class LoginHeadControl(ft.Row):
@@ -34,8 +36,8 @@ class LoginHeadControl(ft.Row):
 class LoginInputControl(ft.Column):
     def __init__(self):
         super().__init__()
-        self.email = ft.TextField(hint_text="email")
-        self.password = ft.TextField(hint_text="password", password=True)
+        self.email = ft.TextField(hint_text="email", value="admin@pdsf.com")
+        self.password = ft.TextField(hint_text="password", password=True, value="pdsf123456")
         self.login_btn = ft.ElevatedButton("Login",icon=ft.icons.LOGIN, on_click=self.on_click, bgcolor=ft.colors.BLUE_200)
         self.controls = [
             ft.Column(controls=[self.email, self.password]),
@@ -46,11 +48,6 @@ class LoginInputControl(ft.Column):
 
     def on_click(self, e):
         login(self.page, self.email.value, self.password.value)
-
-    def update(self):
-        self.email.value = ""
-        self.password.value = ""
-        self.page.update()
 
 
 class RegisterInputControl(ft.Column):
@@ -67,13 +64,7 @@ class RegisterInputControl(ft.Column):
         self.expand = True
 
     def on_click(self, e):
-        print(self.email.value, self.password.value)
-        e.page.update()
-
-    def update(self):
-        self.email.value = ""
-        self.password.value = ""
-        self.page.update()
+        register(self.page, self.email.value, self.password.value)
 
 
 class LoginControl(ft.Container):
@@ -94,3 +85,59 @@ class LoginControl(ft.Container):
         )
         self.bgcolor = ft.colors.CYAN_50
         self.border_radius = 5
+
+
+def login(page: ft.Page, email, password):
+    ip = page.client_ip
+    json_ = {
+        "email": email,
+        "password": password
+    }
+    res = httpx.post(f"{Cfg.HOST}/user/login", json=json_)
+    if res.status_code == 200:
+        js_res = res.json()
+        img = js_res["img"]
+        id = js_res["id"]
+        file_path = Path(f"./assets/{id}/{img}")
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        res = httpx.get(f"{Cfg.HOST}/static/{img}")
+        with open(file_path, "bw")as f:
+            f.write(res.content)
+        for k, v in js_res.items():
+            page.client_storage.set(k, v)
+        
+        page.go("/home")
+    else:
+        page.client_storage.clear()
+        dlg = ft.AlertDialog(
+            title=ft.Text(res.json()), on_dismiss=lambda e: page.update())
+        page.open(dlg)
+        page.update()
+
+
+def login_check(page: ft.Page):
+    token_v = page.client_storage.get("token")
+    if token_v is not None:
+        res = httpx.get(f"{Cfg.HOST}/user/current_user", headers={"token": token_v}, timeout=30)
+        if res.status_code == 200:
+            return True
+    return False
+
+
+def logout(page: ft.Page):
+    page.client_storage.clear()
+    page.go("/login")
+
+
+def register(page, email, password):
+    json_ = {
+        "email": email,
+        "password": password
+    }
+    res = httpx.post(f"{Cfg.HOST}/user/register", json=json_)
+    if res.status_code == 200:
+        login(page, email, password)
+    else:
+        dlg = ft.AlertDialog(
+            title=ft.Text(res.json()), on_dismiss=lambda e: page.update())
+        page.open(dlg)
