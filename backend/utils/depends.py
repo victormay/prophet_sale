@@ -30,7 +30,6 @@ async def NeedAdmin(
     request: Request
 ):
     user: UserBase = await LoggedIn(request)
-    print("666666666666666")
     if not user.admin:
         raise HTTPException(403, "you are not admin user")
     return user

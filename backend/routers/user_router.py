@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Header
+from typing import List
 
 from db.schemas.user_schema import UserLogin, UserBase, UserCrate
 from db.dao.user_dao import UserDao
@@ -29,6 +30,15 @@ async def current_user_info(
     current_user: UserBase = Depends(LoggedIn)
 ):
     return current_user.model_dump_json()
+
+
+@user_api.get("/select_all", dependencies=[Depends(NeedAdmin)])
+async def select_all_user(
+    user_dao: UserDao = Depends(DALGetter(UserDao))
+):
+    users = await user_dao.select_all()
+    return users
+
 
 
 # @user_api.get("/test_login", dependencies=[Depends(LoggedIn)])

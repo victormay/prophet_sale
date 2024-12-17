@@ -28,7 +28,3 @@ class UserBase(BaseModel):
         json_encoders = {
             datetime: lambda v: v.strftime('%Y-%m-%d %H:%M:%S')  # 自定义格式化为 'YYYY-MM-DD HH:MM:SS'
         }
-
-
-class UserShow(PSDFResponse):
-    data: Optional[Union[List[UserBase], UserBase]]

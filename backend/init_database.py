@@ -44,7 +44,7 @@ def init_table():
             email="user@pdsf.com",
             username="user",
             password=User.gen_password("123456"),
-            img="normal.png"
+            img="default.png"
         )
         ss.session.add_all([admin_user, normal_user])
 

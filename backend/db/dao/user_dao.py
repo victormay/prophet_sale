@@ -5,7 +5,7 @@ from typing import Tuple
 from fastapi.exceptions import HTTPException
 
 from db.models.user import User
-from db.schemas.user_schema import UserLogin, UserCrate, UserShow, UserBase
+from db.schemas.user_schema import UserLogin, UserCrate, UserBase
 from utils.common import gen_token, parse_token
 
 
@@ -37,6 +37,12 @@ class UserDao:
         count_exist = await self.ss.execute(select(User).filter(User.email==user.email))
         if count_exist.scalar() is not None:
             raise HTTPException(422, "email existed, please login or try a new one!")
+        
+    async def select_all(self):
+        q = await self.ss.execute(select(User))
+        users = [UserBase.model_validate(i) for i in q.scalars().all()]
+        return users
+
         
     # async def get_user_by_count(self, usercount):
     #     db_user = await self.ss.scalar(select(User).filter(User.usercount==usercount))
