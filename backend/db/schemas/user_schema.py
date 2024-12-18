@@ -2,7 +2,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List, Union, Annotated
 
-from .common import PSDFResponse
 
 
 class UserLogin(BaseModel):

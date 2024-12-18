@@ -14,3 +14,10 @@ class Config:
     # admin
     USERCOUNT = "admin@pdsf.com"
     PASSWORD = "123456"
+
+    # static
+    STATIC_DIR = Path("./static")
+
+    # data
+    SUFFIXES = ["csv", "xlsx"]
+    COLUMNS = ["date", "quantity", "name"]

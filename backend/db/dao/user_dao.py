@@ -2,6 +2,7 @@ import json
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Tuple
+from datetime import datetime
 from fastapi.exceptions import HTTPException
 
 from db.models.user import User
@@ -43,7 +44,33 @@ class UserDao:
         users = [UserBase.model_validate(i) for i in q.scalars().all()]
         return users
 
-        
+    async def update_user(self, user: UserBase):
+        q = await self.ss.execute(select(User).where(
+            User.id == user.id or User.email == user.email
+            )
+        )
+        users = q.scalars().all()
+        if len(users) > 1:
+             raise HTTPException(422, "email existed, please try a new one!")
+        user_ = users[0]
+
+        user_.email = user.email
+        user_.username = user.username
+        user_.img = user.img
+        user_.admin = user.admin
+        user_.update_time = datetime.now()
+        user = UserBase.model_validate(user_)
+        self.ss.add(user_)
+        await self.ss.commit()
+        return user
+    
+
+    async def update_self(self, current_user: UserBase, user: UserBase):
+        if current_user.id == user.id:
+            return await self.update_user(user)
+        else:
+            raise HTTPException(401, "you are modifing anthor person")
+
     # async def get_user_by_count(self, usercount):
     #     db_user = await self.ss.scalar(select(User).filter(User.usercount==usercount))
     #     if db_user is None:

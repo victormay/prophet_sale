@@ -36,9 +36,24 @@ async def current_user_info(
 async def select_all_user(
     user_dao: UserDao = Depends(DALGetter(UserDao))
 ):
-    users = await user_dao.select_all()
-    return users
+    return await user_dao.select_all()
 
+
+@user_api.post("/update_user", dependencies=[Depends(NeedAdmin)])
+async def update_user(
+    user: UserBase,
+    user_dao: UserDao = Depends(DALGetter(UserDao)),
+):
+    return await user_dao.update_user(user)
+
+
+@user_api.post("/update_self", dependencies=[Depends(LoggedIn)])
+async def update_self(
+    user: UserBase,
+    current_user: UserBase = Depends(LoggedIn),
+    user_dao: UserDao = Depends(DALGetter(UserDao)),
+):
+    return await user_dao.update_self(current_user, user)
 
 
 # @user_api.get("/test_login", dependencies=[Depends(LoggedIn)])
