@@ -4,7 +4,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-
+from fastapi.exceptions import HTTPException
 
 # import sys
 # from pathlib import Path
@@ -42,8 +42,11 @@ def gen_token(info: dict, expire: int = Config.TOKEN_EXPIRE):
 
 
 def parse_token(token: OAuth2PasswordBearer):
-    info = jwt.decode(token, Config.KEY, Config.METHOD)
-    return info
+    try:
+        info = jwt.decode(token, Config.KEY, Config.METHOD)
+        return info
+    except Exception as e:
+        raise HTTPException(401, str(e))
 
 
 

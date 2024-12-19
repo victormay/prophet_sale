@@ -1,4 +1,3 @@
-import enum
 from sqlalchemy import types
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column

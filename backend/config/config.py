@@ -16,8 +16,10 @@ class Config:
     PASSWORD = "123456"
 
     # static
-    STATIC_DIR = Path("./static")
+    STATIC_DIR = Path("static")
+    UPLOAD_DIR = STATIC_DIR.joinpath("uploads")
+    RAWDATA_DIR = STATIC_DIR.joinpath("rawdata")
 
     # data
     SUFFIXES = ["csv", "xlsx"]
-    COLUMNS = ["date", "quantity", "name"]
+    COLUMNS = ["date", "code", "name", "quantity"]

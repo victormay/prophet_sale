@@ -21,6 +21,7 @@ class UserDao:
         user_ = q.scalar()
         if user_ is None:
             raise HTTPException(401, "email not found!")
+        print(user_.password, password)
         if not User.verify_password(password, user_.password):
             raise HTTPException(401, "password error!")
         user_ = UserBase.model_validate(user_)
