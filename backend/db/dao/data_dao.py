@@ -26,7 +26,14 @@ class DataDao:
         datas = [DataInfo.model_validate(i) for i in datas]
         return datas
     
+    async def select_by_id(self, id) ->DataInfo:
+        q = await self.ss.execute(select(Data).where(Data.id==id))
+        data = q.scalar()
+        data = DataInfo.model_validate(data)
+        return data
+    
     async def select_filter(self, filter: DataFilter):
+
         ...
 
     async def update_data(self, data: DataInfo):
