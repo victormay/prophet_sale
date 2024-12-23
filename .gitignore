@@ -163,5 +163,5 @@ cython_debug/
 
 
 # project
-backend/static/rawdata
-backend/static/upload
+backend/static/rawdata/*
+backend/static/upload/*
