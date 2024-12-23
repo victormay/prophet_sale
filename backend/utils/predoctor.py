@@ -1,7 +1,9 @@
-from prophet import Prophet
 import pandas as pd
+from prophet import Prophet
+from prophet.forecaster import logger
 
 from config.config import Config
+
 
 class Predictor:
     def __init__(self, conf, id, name):
@@ -17,8 +19,7 @@ class Predictor:
             "date": "ds",
             "quantity": "y"
         })
-        print(data.head())
-        data["ds"] = pd.to_datetime(data["ds"])
+        # data["ds"] = pd.to_datetime(data["ds"])
         self.model.fit(data)
 
     def reload(self, id=None, name=None, conf=None):
@@ -36,10 +37,6 @@ class Predictor:
     def predict(self, k=7):
         future = self.model.make_future_dataframe(periods=k)
         forecast = self.model.predict(future)
-        fig1 = self.model.plot(forecast)
-        fig1.savefig('temp1.png')
-        fig2 = self.model.plot_components(forecast)
-        fig2.savefig('temp2.png')
         return forecast
 
     def __eq__(self, value):

@@ -28,7 +28,7 @@ def init_table():
         echo=ECHO
     )
     with engine.connect() as cnn:
-        Base.metadata.create_all(cnn)
+        Base.metadata.create_all(cnn, checkfirst=False)
         cnn.commit()
 
     with Session(engine).begin() as ss:

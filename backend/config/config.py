@@ -5,7 +5,7 @@ class Config:
     ROOT = Path(__file__).absolute().parent.parent
 
     # auth
-    TOKEN_EXPIRE = 60*60
+    TOKEN_EXPIRE = 60*60*24*7
     KEY = "Python No.1!"
     METHOD = "HS256"
 
