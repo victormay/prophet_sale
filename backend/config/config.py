@@ -2,8 +2,6 @@ from pathlib import Path
 
 
 class Config:
-    DATABASE_URI = "mysql+pymysql://root:123456@172.20.0.220:3306"
-    SQLALCHEMY_DATABASE_URI = "mysql+aiomysql://root:123456@172.20.0.220:3306/PDSF"
     ROOT = Path(__file__).absolute().parent.parent
 
     # auth

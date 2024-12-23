@@ -15,6 +15,7 @@ class UserDao:
         self.ss = ss
 
     async def login(self, user: UserLogin) -> dict:
+        print(self.ss)
         email = user.email
         password = user.password
         q = await self.ss.execute(select(User).where(User.email == email))
