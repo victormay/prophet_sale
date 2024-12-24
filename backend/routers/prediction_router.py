@@ -62,7 +62,7 @@ async def pred_one_sku(
     
     data = predictor.predict(args.range)
     
-    print(data.columns)
+    return data.to_dict()
 
 
 @pred_api.post("/add_pconfig", dependencies=[Depends(LoggedIn)])
@@ -72,3 +72,17 @@ async def add_pconfig(
     p_dao: PredictorDao = Depends(DALGetter(PredictorDao))
 ):
     return await p_dao.add_one(user, pconfig)
+
+
+@pred_api.get("/get_latest_pconfig", dependencies=[Depends(LoggedIn)])
+async def get_latest_pconfig(
+    p_dao: PredictorDao = Depends(DALGetter(PredictorDao))
+):
+    return await p_dao.get_latest()
+
+
+@pred_api.get("/get_all", dependencies=[Depends(LoggedIn)])
+async def get_latest_pconfig(
+    p_dao: PredictorDao = Depends(DALGetter(PredictorDao))
+):
+    return await p_dao.get_all()

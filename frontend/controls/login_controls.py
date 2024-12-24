@@ -93,14 +93,14 @@ def login(page: ft.Page, email, password):
         "email": email,
         "password": password
     }
-    res = httpx.post(f"{Cfg.HOST}/user/login", json=json_)
+    res = httpx.post(f"{Cfg.HOST}/user/login", json=json_, timeout=Cfg.TIMEOUT)
     if res.status_code == 200:
         js_res = res.json()
         img = js_res["img"]
         id = js_res["id"]
         file_path = Path(f"./assets/{id}/{img}")
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        res = httpx.get(f"{Cfg.HOST}/static/{img}")
+        res = httpx.get(f"{Cfg.HOST}/static/{img}", timeout=Cfg.TIMEOUT)
         with open(file_path, "bw")as f:
             f.write(res.content)
         for k, v in js_res.items():
@@ -118,7 +118,7 @@ def login(page: ft.Page, email, password):
 def login_check(page: ft.Page):
     token_v = page.client_storage.get("token")
     if token_v is not None:
-        res = httpx.get(f"{Cfg.HOST}/user/current_user", headers={"token": token_v}, timeout=30)
+        res = httpx.get(f"{Cfg.HOST}/user/current_user", headers={"token": token_v}, timeout=Cfg.TIMEOUT)
         if res.status_code == 200:
             return True
     return False
@@ -134,7 +134,7 @@ def register(page, email, password):
         "email": email,
         "password": password
     }
-    res = httpx.post(f"{Cfg.HOST}/user/register", json=json_)
+    res = httpx.post(f"{Cfg.HOST}/user/register", json=json_, timeout=Cfg.TIMEOUT)
     if res.status_code == 200:
         login(page, email, password)
     else:

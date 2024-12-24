@@ -143,7 +143,7 @@ async def increase_sale_data(
 
 
 # 查询全部商品
-@data_api.get("/select_all", dependencies=[Depends(NeedAdmin)])
+@data_api.get("/select_all", dependencies=[Depends(LoggedIn)])
 async def select_all(
     data_dao: DataDao = Depends(DALGetter(DataDao))
 ):
@@ -175,3 +175,12 @@ async def update_data(
     data_dao: DataDao = Depends(DALGetter(DataDao)),
 ):
     return await data_dao.update_data(data)
+
+
+@data_api.get("/sale_history/{id}", dependencies=[Depends(LoggedIn)])
+async def update_data(
+    id: str
+):
+    fpath = Config.RAWDATA_DIR.joinpath(id, "data.xlsx")
+    pd_data = pd.read_excel(fpath)
+    return pd_data.to_dict()

@@ -34,12 +34,12 @@ class UsersManagementView(BaseView):
         header = {
             "token": token
         }
-        res = httpx.get(f"{Cfg.HOST}/user/select_all", headers=header)
+        res = httpx.get(f"{Cfg.HOST}/user/select_all", headers=header, timeout=Cfg.TIMEOUT)
         js_res = res.json()
         for i in js_res:
             file_path = Path(f"./assets/{i['id']}/{i['img']}")
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            res = httpx.get(f"{Cfg.HOST}/static/{i['img']}")
+            res = httpx.get(f"{Cfg.HOST}/static/{i['img']}", timeout=Cfg.TIMEOUT)
             with open(file_path, "bw")as f:
                 f.write(res.content)
 
